@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hồ sơ Năng lực - Đào Xuân Hải</title>
+    <style>
+        :root {
+            --bg-color: #050b14;
+            --card-bg: rgba(13, 27, 42, 0.85);
+            --primary-blue: #00b4d8;
+            --accent-cyan: #90e0ef;
+            --text-light: #f8f9fa;
+            --text-gray: #a0aec0;
+            --border-glow: rgba(0, 180, 216, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-light);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* WIND FARM BACKGROUND FIELD WITH MULTIPLE MOVING TURBINES */
+        .wind-farm-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            pointer-events: none;
+            overflow: hidden;
+            background: linear-gradient(180deg, #040910 0%, #081424 100%);
+        }
+
+        /* Generic Turbine Base Styles */
+        .turbine {
+            position: absolute;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0.12; /* Subdued background visual balance */
+        }
+
+        .tower {
+            background: linear-gradient(90deg, rgba(144, 224, 239, 0.4) 0%, rgba(0, 180, 216, 0.2) 100%);
+            width: 4px;
+            border-top-left-radius: 2px;
+            border-top-right-radius: 2px;
+        }
+
+        .hub {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-cyan);
+            border-radius: 50%;
+            position: absolute;
+            z-index: 2;
+        }
+
+        .rotor {
+            position: absolute;
+            width: 0;
+            height: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: spin linear infinite;
+        }
+
+        .blade {
+            position: absolute;
+            background: linear-gradient(180deg, var(--accent-cyan) 0%, rgba(0, 180, 216, 0.1) 100%);
+            transform-origin: bottom center;
+            border-radius: 50% 50% 0 0;
+        }
+
+        /* Distinct Turbine Implementations representing a true Wind Farm layout */
+        /* Turbine 1: Large close-up right */
+        .t1 { right: 8%; bottom: -20px; scale: 1.2; opacity: 0.14; }
+        .t1 .tower { height: 380px; width: 5px; }
+        .t1 .rotor { animation-duration: 22s; }
+        .t1 .blade { width: 4px; height: 160px; top: -160px; }
+        .t1 .blade:nth-child(1) { transform: rotate(0deg); }
+        .t1 .blade:nth-child(2) { transform: rotate(120deg); }
+        .t1 .blade:nth-child(3) { transform: rotate(240deg); }
+
+        /* Turbine 2: Medium midground left */
+        .t2 { left: 10%; bottom: 15%; scale: 0.85; }
+        .t2 .tower { height: 280px; }
+        .t2 .rotor { animation-duration: 18s; animation-direction: reverse; }
+        .t2 .blade { width: 3px; height: 120px; top: -120px; }
+        .t2 .blade:nth-child(1) { transform: rotate(15deg); }
+        .t2 .blade:nth-child(2) { transform: rotate(135deg); }
+        .t2 .blade:nth-child(3) { transform: rotate(255deg); }
+
+        /* Turbine 3: Deep background right-center */
+        .t3 { right: 35%; bottom: 35%; scale: 0.5; opacity: 0.07; }
+        .t3 .tower { height: 220px; width: 3px; }
+        .t3 .rotor { animation-duration: 25s; }
+        .t3 .blade { width: 2px; height: 90px; top: -90px; }
+        .t3 .blade:nth-child(1) { transform: rotate(45deg); }
+        .t3 .blade:nth-child(2) { transform: rotate(165deg); }
+        .t3 .blade:nth-child(3) { transform: rotate(285deg); }
+
+        /* Turbine 4: Far background left-center */
+        .t4 { left: 40%; bottom: 45%; scale: 0.4; opacity: 0.05; }
+        .t4 .tower { height: 180px; width: 2px; }
+        .t4 .rotor { animation-duration: 15s; }
+        .t4 .blade { width: 2px; height: 75px; top: -75px; }
+        .t4 .blade:nth-child(1) { transform: rotate(80deg); }
+        .t4 .blade:nth-child(2) { transform: rotate(200deg); }
+        .t4 .blade:nth-child(3) { transform: rotate(320deg); }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* PROFILE LAYOUT STRUCTURE */
+        .wrapper {
+            max-width: 540px;
+            margin: 0 auto;
+            padding: 24px 16px;
+            position: relative;
+        }
+
+        .profile-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(0, 180, 216, 0.15);
+            border-radius: 24px;
+            padding: 28px 24px;
+            text-align: center;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            margin-bottom: 24px;
+        }
+
+        .avatar-container {
+            position: relative;
+            width: 110px;
+            height: 110px;
+            margin: 0 auto 16px;
+        }
+
+        .avatar-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary-blue);
+            box-shadow: 0 0 20px var(--border-glow);
+        }
+
+        .verified-badge {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            background-color: #0077b6;
+            color: #fff;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            border: 2px solid var(--bg-color);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-light);
+            margin-bottom: 4px;
+            letter-spacing: 0.5px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: var(--text-gray);
+            margin-bottom: 12px;
+        }
+
+        .company-tag {
+            display: inline-block;
+            background: linear-gradient(90deg, #1e3a8a 0%, #0284c7 100%);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 6px 16px;
+            border-radius: 50px;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+            border: 1px solid rgba(144, 224, 239, 0.3);
+        }
+
+        .vcard-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--primary-blue);
+            color: #040910;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 15px;
+            padding: 12px 24px;
+            border-radius: 14px;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 180, 216, 0.4);
+        }
+
+        .vcard-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* SECTIONS & MEDIA BLOCKS */
+        .section-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin: 28px 0 14px 4px;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(0,180,216,0.3) 0%, rgba(0,0,0,0) 100%);
+        }
+
+        .media-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 18px;
+            padding: 16px;
+            margin-bottom: 14px;
+            backdrop-filter: blur(12px);
+        }
+
+        .media-info {
+            text-align: left;
+            margin-bottom: 12px;
+        }
+
+        .media-tag {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 700;
+            background: rgba(0, 180, 216, 0.15);
+            color: var(--accent-cyan);
+            padding: 3px 8px;
+            border-radius: 4px;
+            margin-bottom: 6px;
+            border: 1px solid rgba(0, 180, 216, 0.2);
+        }
+
+        .media-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-light);
+            line-height: 1.3;
+        }
+
+        .media-desc {
+            font-size: 12px;
+            color: var(--text-gray);
+            margin-top: 4px;
+        }
+
+        .image-box {
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            background-color: #0a111a;
+            border: 1px solid rgba(255,255,255,0.05);
+            position: relative;
+        }
+
+        .image-box img {
+            width: 100%;
+            display: block;
+            height: auto;
+            transition: opacity 0.3s;
+        }
+
+        /* Fallback placeholder style if image isn't loaded on disk yet */
+        .image-placeholder {
+            padding: 40px 20px;
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-gray);
+        }
+
+        /* FOOTER BRANDING */
+        footer {
+            text-align: center;
+            padding: 24px 0 10px;
+            font-size: 11px;
+            color: rgba(160, 174, 192, 0.4);
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- WIND FARM BACKGROUND FIELD WITH MULTIPLE MOVING TURBINES -->
+    <div class="wind-farm-bg">
+        <!-- Turbine 1 (Large Forefront-Right) -->
+        <div class="turbine t1">
+            <div class="hub"></div>
+            <div class="rotor">
+                <div class="blade"></div>
+                <div class="blade"></div>
+                <div class="blade"></div>
+            </div>
+            <div class="tower"></div>
+        </div>
+
+        <!-- Turbine 2 (Midground-Left) -->
+        <div class="turbine t2">
+            <div class="hub"></div>
+            <div class="rotor">
+                <div class="blade"></div>
+                <div class="blade"></div>
+                <div class="blade"></div>
+            </div>
+            <div class="tower"></div>
+        </div>
+
+        <!-- Turbine 3 (Deep Background Center-Right) -->
+        <div class="turbine t3">
+            <div class="hub"></div>
+            <div class="rotor">
+                <div class="blade"></div>
+                <div class="blade"></div>
+                <div class="blade"></div>
+            </div>
+            <div class="tower"></div>
+        </div>
+
+        <!-- Turbine 4 (Distant Background Center-Left) -->
+        <div class="turbine t4">
+            <div class="hub"></div>
+            <div class="rotor">
+                <div class="blade"></div>
+                <div class="blade"></div>
+                <div class="blade"></div>
+            </div>
+            <div class="tower"></div>
+        </div>
+    </div>
+
+    <!-- MAIN INTERACTIVE WORKSPACE -->
+    <div class="wrapper">
+
+        <!-- HEADER BIOGRAPHY SECTION -->
+        <div class="profile-card">
+            <div class="avatar-container">
+                <img src="avatar.jpg" alt="Đào Xuân Hải" class="avatar-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div class="image-placeholder" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; border-radius:50%; background:#101f30; display:flex; align-items:center; justify-content:center; border:2px dashed var(--primary-blue); font-size:11px;">[avatar.jpg]</div>
+                <div class="verified-badge" title="FROSIO Certified">&#10003;</div>
+            </div>
+            <h1>Đào Xuân Hải</h1>
+            <div class="subtitle">Senior QC Specialist / Coating & Inspection Specialist</div>
+            <div class="company-tag">CS WIND VIETNAM</div>
+            
+            <a href="tel:+84909948862" class="vcard-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                LIÊN HỆ TRỰC TIẾP
+            </a>
+        </div>
+
+        <!-- ORGANIZATION LAYOUT CHART -->
+        <div class="section-title">Sơ đồ Tổ chức</div>
+        <div class="media-card">
+            <div class="media-info">
+                <span class="media-tag">CS WIND VN</span>
+                <div class="media-title">QC-ST Organization Chart</div>
+                <div class="media-desc">Quản lý trực tiếp cấu trúc nhân sự kiểm soát chất lượng tại Nhà máy 1 và Nhà máy 2.</div>
+            </div>
+            <div class="image-box">
+                <img src="org_chart.jpg" alt="QC-ST Organization Chart" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div class="image-placeholder" style="display:none;">⚠️ Vui lòng sao chép tệp <b>org_chart.jpg</b> vào thư mục gốc trên GitHub để hiển thị hình ảnh thực tế.</div>
+            </div>
+        </div>
+
+        <!-- CORE INDUSTRIAL CREDENTIALS -->
+        <div class="section-title">Hồ sơ Chứng chỉ Quốc tế</div>
+
+        <!-- FROSIO Level 3 -->
+        <div class="media-card">
+            <div class="media-info">
+                <span class="media-tag" style="background:rgba(230,126,34,0.15); color:#e67e22; border-color:rgba(230,126,34,0.3)">FROSIO NORWAY</span>
+                <div class="media-title">Certified Surface Treatment Inspector - Level III</div>
+                <div class="media-desc">Chứng chỉ chuyên gia kiểm định xử lý bề mặt cao cấp nhất (Certificate No. 15093).</div>
+            </div>
+            <div class="image-box">
+                <img src="frosio_level3.jpg" alt="FROSIO Level III Certificate" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div class="image-placeholder" style="display:none;">⚠️ Vui lòng sao chép tệp <b>frosio_level3.jpg</b> vào thư mục.</div>
+            </div>
+        </div>
+
+        <!-- APQP4Wind -->
+        <div class="media-card">
+            <div class="media-info">
+                <span class="media-tag" style="background:rgba(46,204,113,0.15); color:#2ecc71; border-color:rgba(46,204,113,0.3)">APQP4WIND</span>
+                <div class="media-title">APQP4Wind Specialist Training Certificate</div>
+                <div class="media-desc">Tiêu chuẩn cốt lõi về hoạch định và kiểm soát chất lượng nâng cao trong chuỗi cung ứng điện gió toàn cầu.</div>
+            </div>
+            <div class="image-box">
+                <img src="apqp4wind.jpg" alt="APQP4Wind Specialist Certificate" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div class="image-placeholder" style="display:none;">⚠️ Vui lòng sao chép tệp <b>apqp4wind.jpg</b> vào thư mục.</div>
+            </div>
+        </div>
+
+        <!-- ISO 9712 NDT VT -->
+        <div class="media-card">
+            <div class="media-info">
+                <span class="media-tag">ISO 9712 NDT</span>
+                <div class="media-title">Visual Testing (VT) Level 2 Certification</div>
+                <div class="media-desc">Thẩm định chứng nhận tay nghề kiểm tra khuyết tật mối hàn bằng phương pháp trực quan.</div>
+            </div>
+            <div class="image-box">
+                <img src="ndt_vt.jpg" alt="NDT VT Level 2 Certificate" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div class="image-placeholder" style="display:none;">⚠️ Vui lòng sao chép tệp <b>ndt_vt.jpg</b> vào thư mục.</div>
+            </div>
+        </div>
+
+        <!-- ISO 9712 NDT PT -->
+        <div class="media-card">
+            <div class="media-info">
+                <span class="media-tag">ISO 9712 NDT</span>
+                <div class="media-title">Liquid Penetrant Testing (PT) Level 2 Certification</div>
+                <div class="media-desc">Chứng nhận kiểm tra chất lượng bề mặt mối hàn bằng phương pháp thẩm thấu chất lỏng.</div>
+            </div>
+            <div class="image-box">
+                <img src="ndt_pt.jpg" alt="NDT PT Level 2 Certificate" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div class="image-placeholder" style="display:none;">⚠️ Vui lòng sao chép tệp <b>ndt_pt.jpg</b> vào thư mục.</div>
+            </div>
+        </div>
+
+        <!-- American Galvanizers Association -->
+        <div class="media-card">
+            <div class="media-info">
+                <span class="media-tag">AGA USA</span>
+                <div class="media-title">Hot-Dip Galvanizing Inspection Course</div>
+                <div class="media-desc">Chứng chỉ chuyên môn kiểm định chất lượng phủ mạ kẽm nhúng nóng bảo vệ kết cấu thép bền vững.</div>
+            </div>
+            <div class="image-box">
+                <img src="aga_inspection.jpg" alt="AGA Inspection Certificate" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div class="image-placeholder" style="display:none;">⚠️ Vui lòng sao chép tệp <b>aga_inspection.jpg</b> vào thư mục.</div>
+            </div>
+        </div>
+
+        <!-- QUATEST 3 Calibration -->
+        <div class="media-card">
+            <div class="media-info">
+                <span class="media-tag">QUATEST 3</span>
+                <div class="media-title">Calibration of Common Length Measuring Instruments</div>
+                <div class="media-desc">Chứng nhận hoàn thành khóa hiệu chuẩn các thiết bị đo độ dài thông dụng trong cơ khí chính xác.</div>
+            </div>
+            <div class="image-box">
+                <img src="quatest3.jpg" alt="QUATEST 3 Calibration Certificate" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div class="image-placeholder" style="display:none;">⚠️ Vui lòng sao chép tệp <b>quatest3.jpg</b> vào thư mục.</div>
+            </div>
+        </div>
+
+        <!-- Jotun & Hempel Schools -->
+        <div class="media-card">
+            <div class="media-info">
+                <span class="media-tag">PAINT INDUSTRY TECH</span>
+                <div class="media-title">Jotun Paint School & Hempel Basic Paints Technology</div>
+                <div class="media-desc">Hệ thống chứng chỉ hoàn thiện công nghệ sơn bảo vệ hàng hải và kết cấu công nghiệp hạng nặng.</div>
+            </div>
+            <div class="image-box" style="margin-bottom: 8px;">
+                <img src="jotun_school.jpg" alt="Jotun Paint School Diploma" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div class="image-placeholder" style="display:none;">⚠️ Vui lòng sao chép tệp <b>jotun_school.jpg</b> vào thư mục.</div>
+            </div>
+            <div class="image-box">
+                <img src="hempel_basic.jpg" alt="Hempel Basic Paint Certificate" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div class="image-placeholder" style="display:none;">⚠️ Vui lòng sao chép tệp <b>hempel_basic.jpg</b> vào thư mục.</div>
+            </div>
+        </div>
+
+        <!-- FOOTER BRANDING -->
+        <footer>
+            &copy; 2026 DAO XUAN HAI. All Rights Reserved.<br>
+            Designed for Wind Tower Manufacturing Profile QR.
+        </footer>
+
+    </div>
+
+</body>
+</html>
